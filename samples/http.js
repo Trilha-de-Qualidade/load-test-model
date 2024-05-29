@@ -1,6 +1,4 @@
-import http from "k6/http";
-import { check } from "k6";
-const axios = require('axios');
+import { HomePage } from './functions/HomePage.js';
 
 export const options = {
   vus: 5,
@@ -9,13 +7,24 @@ export const options = {
     {target: 30, duration: '10s'},
     {target: 30, duration: '7s'},
     {target: 0, duration: '10s'}
-  ]
+  ],
+  thresholds: { // configure thresholds
+    http_req_failed: ['rate<=0.05'],
+    http_req_duration: ['p(95)<=5000'],
+  },
 };
 
 export default function () {
-  check(http.get("https://test-api.k6.io/"), {
-    "status is 200": (r) => r.status == 200,
-    "protocol is HTTP/2": (r) => r.proto == "HTTP/2.0",
+  group('01_VisitHomepage', function () {
+    HomePage();
+    // Add more functions here
   });
+
+  // Add more groups here
+  group('02_Checkout', function () {
+    // Add more functions here
+  });
+
+
 }
 
